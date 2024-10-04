@@ -17,10 +17,11 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const secretKey = process.env.JWT_SECRET || 'supersecretkey';
 const saltRounds = 10; // Número de rounds para gerar o salt do bcrypt
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
 
 // Configurar CORS para permitir o frontend fazer requisições ao backend
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://sj-lotes-01f778eb318a.herokuapp.com'], // Permitir origens específicas
+  origin: ['http://localhost:3000', NEXT_PUBLIC_BACKEND_URL], // Permitir origens específicas
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true // Permitir o uso de cookies e autenticação
