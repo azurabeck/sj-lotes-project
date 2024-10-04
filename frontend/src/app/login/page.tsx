@@ -21,18 +21,23 @@ export default function Login() {
         body: JSON.stringify({ email, password }),
       });
 
+      // Depuração: Verificar o status da resposta
       if (response.ok) {
         const data = await response.json();
         
         // Armazenar o token JWT em um cookie
         Cookies.set('token', data.token, { expires: 1, sameSite: 'strict' });
 
-        // Redirecionar o usuário para a verificação de página correta
+        // Redirecionar o usuário para a página principal
         router.push('/');
       } else {
+        // Exibir a resposta completa para depuração
+        const errorData = await response.json();
+        console.error('Erro no login:', errorData);
         setError('Credenciais inválidas');
       }
     } catch (err) {
+      console.error('Erro de conexão:', err);
       setError('Erro ao conectar ao servidor');
     }
   };
