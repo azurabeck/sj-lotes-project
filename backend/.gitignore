@@ -2,6 +2,7 @@
 node_modules/
 frontend/
 /frontend
+/README.md
 
 # Variáveis de ambiente
 .env
