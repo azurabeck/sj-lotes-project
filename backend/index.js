@@ -24,7 +24,7 @@ app.use(cors({
   origin: ['http://localhost:3000', NEXT_PUBLIC_BACKEND_URL], // Permitir origens específicas
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true // Permitir o uso de cookies e autenticação
+  credentials: true
 }));
 
 // Habilitar o uso de cookies
