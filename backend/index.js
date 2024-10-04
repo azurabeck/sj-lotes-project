@@ -42,10 +42,11 @@ const pool = new Pool({
 });
 
 // Rota de registro de usuário com criptografia de senha usando bcrypt
+// Rota de registro de usuário com criptografia de senha usando bcrypt
 app.post('/register', async (req, res) => {
-  const { name, email, password, type = 'client' } = req.body;
+  const { name, email, password, cpf, rg, validade, orgaoExpeditor, telefone1, telefone2, dataNasc, numLote, dataCompra, dataPrevista, valorLote, valorEntrada, formaPagamento, valorParcelas } = req.body;
 
-  console.log('Recebendo dados do usuário:', { name, email, password, type });
+  console.log('Recebendo dados do usuário:', { name, email });
 
   try {
     // Verificar se o email já foi registrado
@@ -57,10 +58,18 @@ app.post('/register', async (req, res) => {
     // Criptografar a senha com bcrypt
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Criar novo usuário no banco de dados
+    // Inserir os dados na tabela `users`
+    const userResult = await pool.query(
+      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id',
+      [name, email, hashedPassword]
+    );
+
+    const userId = userResult.rows[0].id;
+
+    // Inserir os dados na tabela `user_data`
     await pool.query(
-      'INSERT INTO users (name, email, password, type) VALUES ($1, $2, $3, $4)',
-      [name, email, hashedPassword, type]
+      'INSERT INTO user_data (user_id, name, email, cpf, rg, validade, orgao_expeditor, telefone1, telefone2, data_nasc, num_lote, data_compra, data_prevista, valor_lote, valor_entrada, forma_pagamento, valor_parcelas) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)',
+      [userId, name, email, cpf, rg, validade, orgaoExpeditor, telefone1, telefone2, dataNasc, numLote, dataCompra, dataPrevista, valorLote, valorEntrada, formaPagamento, valorParcelas]
     );
 
     res.status(201).json({ message: 'Usuário criado com sucesso' });
@@ -70,6 +79,8 @@ app.post('/register', async (req, res) => {
   }
 });
 
+
+
 // Rota de login com autenticação usando bcrypt e JWT
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -77,15 +88,19 @@ app.post('/login', async (req, res) => {
   try {
     // Verificar se o email existe
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    
     if (result.rows.length === 0) {
+      console.log('Email não encontrado:', email); // Log para depuração
       return res.status(400).json({ message: 'Credenciais inválidas' });
     }
 
     const user = result.rows[0];
+    console.log('Usuário encontrado:', user); // Log para depuração
 
     // Verificar a senha
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
+      console.log('Senha incorreta para o email:', email); // Log para depuração
       return res.status(400).json({ message: 'Credenciais inválidas' });
     }
 
@@ -99,6 +114,7 @@ app.post('/login', async (req, res) => {
       maxAge: 3600000, // 1 hora
     });
 
+    console.log('Usuário logado com sucesso:', email); // Log de sucesso
     res.json({ token });
   } catch (err) {
     console.error('Erro no login:', err);
