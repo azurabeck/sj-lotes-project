@@ -16,12 +16,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const secretKey = process.env.JWT_SECRET || 'supersecretkey';
-const saltRounds = 10; // Número de rounds para gerar o salt do bcrypt
-const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
 
-// Configurar CORS para permitir o frontend fazer requisições ao backend
+// Configurar CORS para permitir todas as origens (temporariamente)
 app.use(cors({
-  origin: ['http://localhost:3000', NEXT_PUBLIC_BACKEND_URL], // Permitir origens específicas
+  origin: '*', // Permite todas as origens (não recomendado em produção)
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -41,9 +39,8 @@ const pool = new Pool({
   },
 });
 
-// Rota de registro de usuário
-// Rota para registrar apenas o user_data
-app.post('/register-user-data', async (req, res) => {
+// Rota de registro de usuário (usando authMiddleware para proteger a rota)
+app.post('/register-user-data', authMiddleware, async (req, res) => {
   const {
     name,
     email,
@@ -113,8 +110,6 @@ app.post('/register-user-data', async (req, res) => {
     res.status(500).json({ message: 'Erro no servidor ao registrar os dados do comprador' });
   }
 });
-
-
 
 // Rota de buscar clientes
 app.get('/clientes', async (req, res) => {
