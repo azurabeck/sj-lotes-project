@@ -1,0 +1,67 @@
+[
+    {
+      "title": "Clientes",
+      "icon": "user-icon", 
+      "items": [
+        {
+          "text": "Lista de Clientes",
+          "icon": "list-icon",
+          "action": "/clientes/lista"
+        },
+        {
+          "text": "Registrar Cliente",
+          "icon": "register-icon",
+          "action": "/clientes/register"
+        }
+      ]
+    },
+    {
+      "title": "Lotes",
+      "icon": "lot-icon",
+      "items": [
+        {
+          "text": "Vendidos",
+          "icon": "sold-icon",
+          "action": "/lotes/vendidos"
+        },
+        {
+          "text": "Disponível para venda",
+          "icon": "available-icon",
+          "action": "/lotes/disponivel"
+        }
+      ]
+    },
+    {
+      "title": "Histórico",
+      "icon": "history-icon",
+      "items": [
+        {
+          "text": "Pagamentos",
+          "icon": "payment-icon",
+          "action": "/historico/pagamentos"
+        },
+        {
+          "text": "Documentações",
+          "icon": "document-icon",
+          "action": "/historico/documentacoes"
+        }
+      ]
+    },
+    {
+      "title": "Documentações",
+      "icon": "doc-icon",
+      "items": [
+        {
+          "text": "Gerar Novo Documento",
+          "icon": "new-doc-icon",
+          "action": "/documentacoes/gerar"
+        },
+        {
+          "text": "Histórico de Documentação",
+          "icon": "doc-history-icon",
+          "action": "/documentacoes/historico"
+        }
+      ]
+    }
+  ]
+  

@@ -41,12 +41,9 @@ const pool = new Pool({
   },
 });
 
-// Rota de registro de usuário com criptografia de senha usando bcrypt
-// Rota de registro de usuário com criptografia de senha usando bcrypt
+// Rota de registro de usuário
 app.post('/register', async (req, res) => {
   const { name, email, password, cpf, rg, validade, orgaoExpeditor, telefone1, telefone2, dataNasc, numLote, dataCompra, dataPrevista, valorLote, valorEntrada, formaPagamento, valorParcelas } = req.body;
-
-  console.log('Recebendo dados do usuário:', { name, email });
 
   try {
     // Verificar se o email já foi registrado
@@ -55,7 +52,7 @@ app.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Usuário já existe' });
     }
 
-    // Criptografar a senha com bcrypt
+    // Criptografar a senha
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Inserir os dados na tabela `users`
@@ -79,8 +76,6 @@ app.post('/register', async (req, res) => {
   }
 });
 
-
-
 // Rota de login com autenticação usando bcrypt e JWT
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -88,19 +83,15 @@ app.post('/login', async (req, res) => {
   try {
     // Verificar se o email existe
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    
     if (result.rows.length === 0) {
-      console.log('Email não encontrado:', email); // Log para depuração
       return res.status(400).json({ message: 'Credenciais inválidas' });
     }
 
     const user = result.rows[0];
-    console.log('Usuário encontrado:', user); // Log para depuração
 
     // Verificar a senha
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      console.log('Senha incorreta para o email:', email); // Log para depuração
       return res.status(400).json({ message: 'Credenciais inválidas' });
     }
 
@@ -109,12 +100,11 @@ app.post('/login', async (req, res) => {
 
     // Enviar o token no cookie
     res.cookie('token', token, {
-      httpOnly: true, // O cookie não pode ser acessado via JavaScript (XSS prevention)
+      httpOnly: true, // O cookie não pode ser acessado via JavaScript
       secure: process.env.NODE_ENV === 'production', // Enviar apenas via HTTPS em produção
       maxAge: 3600000, // 1 hora
     });
 
-    console.log('Usuário logado com sucesso:', email); // Log de sucesso
     res.json({ token });
   } catch (err) {
     console.error('Erro no login:', err);
@@ -136,11 +126,6 @@ app.post('/verify-token', (req, res) => {
   } catch (err) {
     res.status(401).json({ message: 'Token inválido' });
   }
-});
-
-// Rota protegida que só pode ser acessada por usuários autenticados
-app.get('/dashboard', authMiddleware, (req, res) => {
-  res.json({ message: `Bem-vindo(a), usuário ${req.user.userId}! Tipo de usuário: ${req.user.type}` });
 });
 
 // Rota para logout (remover o cookie com o token JWT)
