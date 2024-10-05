@@ -20,21 +20,21 @@ const secretKey = process.env.JWT_SECRET || 'supersecretkey';
 const saltRounds = 10; // Número de rounds para gerar o salt do bcrypt
 
 // Configurar CORS para permitir o frontend fazer requisições ao backend
-app.use(cors({
-  origin: ['http://localhost:3000', URL], // Permitir origens específicas
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true // Permitir o uso de cookies e autenticação
-}));
+const corsOptions = {
+  origin: ['http://localhost:3000', URL], // Origens permitidas
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
+  allowedHeaders: ['Content-Type', 'Authorization'], 
+  credentials: true, // Para permitir cookies
+};
+
+app.use(cors(corsOptions)); 
+app.options('*', cors(corsOptions)); 
 
 // Habilitar o uso de cookies
 app.use(cookieParser());
 
 // Middleware para parsear o corpo da requisição
 app.use(bodyParser.json());
-
-// Adicionar uma resposta para as requisições pré-flight (OPTIONS)
-app.options('*', cors()); // Adiciona suporte para pré-flight em todas as rotas
 
 // Configurar o pool de conexões com o PostgreSQL
 const pool = new Pool({
