@@ -6,12 +6,12 @@
         {
           "text": "Lista de Clientes",
           "icon": "list-icon",
-          "action": "/clientes/lista"
+          "action": "/clientes/lista-de-clientes"
         },
         {
           "text": "Registrar Cliente",
           "icon": "register-icon",
-          "action": "/clientes/register"
+          "action": "/clientes/registrar"
         }
       ]
     },

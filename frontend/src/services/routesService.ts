@@ -5,8 +5,9 @@ export const publicRoutes = [
 
 export const adminRoutes = [
   "/dashboard",
-  "/register",
-  "/clientes/register",
+  "/clientes/registrar",
+  "/clientes/lista-de-clientes",
+
   // Outras rotas de admin
 ];
 

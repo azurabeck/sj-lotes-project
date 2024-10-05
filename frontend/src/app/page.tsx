@@ -41,7 +41,7 @@ export default function Home() {
           }
         }
         if (data.userType === 'admin') {
-          router.replace('/clientes/register'); // Redireciona para dashboard se for admin
+          router.replace('/clientes/registrar'); // Redireciona para dashboard se for admin
         } else if (data.userType === 'client') {
           router.replace('/lote'); // Redireciona para lote se for cliente
         } else {
