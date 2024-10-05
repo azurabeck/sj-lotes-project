@@ -1,6 +1,7 @@
 export const publicRoutes = [
   "/login",
   "/forgot-password",
+  "/clientes/registrar",
 ];
 
 export const adminRoutes = [
