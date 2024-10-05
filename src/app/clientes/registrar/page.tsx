@@ -11,8 +11,8 @@ export default function Register() {
   const [email, setEmail] = useState('teste@teste.com');
   const [cpf, setCpf] = useState('123.456.789-00');
   const [rg, setRg] = useState('12345678');
-  const [validade, setValidade] = useState('2025-12-31');
-  const [orgaoExpeditor, setOrgaoExpeditor] = useState('SSP');
+  const [dataExp, setValidade] = useState('2025-12-31');
+  const [orgaoExp, setOrgaoExpeditor] = useState('SSP');
   const [telefone1, setTelefone1] = useState('11 99999-9999');
   const [telefone2, setTelefone2] = useState('11 98888-8888');
   const [dataNasc, setDataNasc] = useState('1990-01-01');
@@ -44,8 +44,8 @@ export default function Register() {
       email,
       cpf: cleanedCpf,
       rg: cleanedRg,
-      validade,
-      orgaoExpeditor,
+      dataExp,
+      orgaoExp,
       telefone1: cleanedTelefone1,
       telefone2: cleanedTelefone2,
       dataNasc,
@@ -81,8 +81,8 @@ export default function Register() {
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="mb-4 w-full px-4 py-2 border rounded-lg" />
           <input type="text" value={cpf} onChange={(e) => setCpf(e.target.value)} placeholder="CPF" className="mb-4 w-full px-4 py-2 border rounded-lg" />
           <input type="text" value={rg} onChange={(e) => setRg(e.target.value)} placeholder="RG" className="mb-4 w-full px-4 py-2 border rounded-lg" />
-          <input type="text" value={validade} onChange={(e) => setValidade(e.target.value)} placeholder="Validade do RG" className="mb-4 w-full px-4 py-2 border rounded-lg" />
-          <input type="text" value={orgaoExpeditor} onChange={(e) => setOrgaoExpeditor(e.target.value)} placeholder="Orgão Expeditor" className="mb-4 w-full px-4 py-2 border rounded-lg" />
+          <input type="text" value={dataExp} onChange={(e) => setValidade(e.target.value)} placeholder="Validade do RG" className="mb-4 w-full px-4 py-2 border rounded-lg" />
+          <input type="text" value={orgaoExp} onChange={(e) => setOrgaoExpeditor(e.target.value)} placeholder="Orgão Expeditor" className="mb-4 w-full px-4 py-2 border rounded-lg" />
           <input type="text" value={telefone1} onChange={(e) => setTelefone1(e.target.value)} placeholder="Telefone 1" className="mb-4 w-full px-4 py-2 border rounded-lg" />
           <input type="text" value={telefone2} onChange={(e) => setTelefone2(e.target.value)} placeholder="Telefone 2" className="mb-4 w-full px-4 py-2 border rounded-lg" />
           <input type="date" value={dataNasc} onChange={(e) => setDataNasc(e.target.value)} placeholder="Data de Nascimento" className="mb-4 w-full px-4 py-2 border rounded-lg" />

@@ -8,7 +8,7 @@ export const Dashboard = ({ children }: DashboardProps) => {
     <div className="flex h-screen">
       <Sidebar />
       
-      <div className="flex-grow p-8 bg-gray-100">
+      <div className="fixed h-full p-6 right-0 left-[256px] flex-grow p-8 bg-gray-100">
         {children}
       </div>
     </div>

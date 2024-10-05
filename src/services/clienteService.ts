@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Cliente {
     id: ReactNode;
@@ -5,8 +7,8 @@ export interface Cliente {
     email: string;
     cpf: string;
     rg: string;
-    validade: string;
-    orgaoExpeditor: string;
+    dataExp: string;
+    orgaoExp: string;
     telefone1: string;
     telefone2: string;
     dataNasc: string;
@@ -37,7 +39,7 @@ export interface Cliente {
   export async function registerCliente(clienteData: any): Promise<void> {
     console.log(clienteData)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/register-user-data`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,4 +55,20 @@ export interface Cliente {
       throw error;
     }
   }
+
+  export async function fetchClienteById(id: number): Promise<Cliente> {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/clientes/${id}`);
+      
+      if (!response.ok) {
+        throw new Error('Erro ao buscar cliente');
+      }
+  
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar cliente:', error);
+      throw error;
+    }
+  }
+  
   
