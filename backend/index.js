@@ -15,18 +15,16 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
 const secretKey = process.env.JWT_SECRET || 'supersecretkey';
+const saltRounds = 10; // Número de rounds para gerar o salt do bcrypt
 
-// Configurar CORS para permitir todas as origens (temporariamente)
+// Configurar CORS para permitir o frontend fazer requisições ao backend
 app.use(cors({
-  origin: ['http://localhost:3000', NEXT_PUBLIC_BACKEND_URL], 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: ['http://localhost:3000', 'https://sj-lotes-23f711b8189f.herokuapp.com'], // Permitir origens específicas
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true // Permitir o uso de cookies e autenticação
 }));
-
-app.options('/register-user-data', cors()); // Permite a requisição OPTIONS na rota
 
 // Habilitar o uso de cookies
 app.use(cookieParser());
@@ -42,8 +40,100 @@ const pool = new Pool({
   },
 });
 
-// Rota de registro de usuário (usando authMiddleware para proteger a rota)
-app.post('/register-user-data', authMiddleware, async (req, res) => {
+// Rota de registro de usuário com criptografia de senha usando bcrypt
+app.post('/register', async (req, res) => {
+  const { name, email, password, type = 'client' } = req.body;
+
+  console.log('Recebendo dados do usuário:', { name, email, password, type });
+
+  try {
+    // Verificar se o email já foi registrado
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (result.rows.length > 0) {
+      return res.status(400).json({ message: 'Usuário já existe' });
+    }
+
+    // Criptografar a senha com bcrypt
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Criar novo usuário no banco de dados
+    await pool.query(
+      'INSERT INTO users (name, email, password, type) VALUES ($1, $2, $3, $4)',
+      [name, email, hashedPassword, type]
+    );
+
+    res.status(201).json({ message: 'Usuário criado com sucesso' });
+  } catch (err) {
+    console.error('Erro ao criar usuário:', err);
+    res.status(500).json({ message: 'Erro no servidor' });
+  }
+});
+
+// Rota de login com autenticação usando bcrypt e JWT
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Verificar se o email existe
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (result.rows.length === 0) {
+      return res.status(400).json({ message: 'Credenciais inválidas' });
+    }
+
+    const user = result.rows[0];
+
+    // Verificar a senha
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(400).json({ message: 'Credenciais inválidas' });
+    }
+
+    // Gerar token JWT
+    const token = jwt.sign({ userId: user.id, type: user.type }, secretKey, { expiresIn: '1h' });
+
+    // Enviar o token no cookie
+    res.cookie('token', token, {
+      httpOnly: true, // O cookie não pode ser acessado via JavaScript (XSS prevention)
+      secure: process.env.NODE_ENV === 'production', // Enviar apenas via HTTPS em produção
+      maxAge: 3600000, // 1 hora
+    });
+
+    res.json({ token });
+  } catch (err) {
+    console.error('Erro no login:', err);
+    res.status(500).json({ message: 'Erro no servidor' });
+  }
+});
+
+// Rota para verificar o token JWT e retornar o tipo de usuário
+app.post('/verify-token', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1]; // Pega o token do header
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token não fornecido' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, secretKey); // Verifica o token JWT
+    res.json({ userId: decoded.userId, userType: decoded.type });
+  } catch (err) {
+    res.status(401).json({ message: 'Token inválido' });
+  }
+});
+
+// Rota protegida que só pode ser acessada por usuários autenticados
+app.get('/dashboard', authMiddleware, (req, res) => {
+  res.json({ message: `Bem-vindo(a), usuário ${req.user.userId}! Tipo de usuário: ${req.user.type}` });
+});
+
+// Rota para logout (remover o cookie com o token JWT)
+app.post('/logout', (req, res) => {
+  res.clearCookie('token'); // Limpa o cookie do token JWT
+  res.json({ message: 'Logout bem-sucedido' });
+});
+
+// Rota de registro de dados do comprador (user_data)
+app.post('/register-user-data', async (req, res) => {
   const {
     name,
     email,
@@ -111,17 +201,6 @@ app.post('/register-user-data', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error('Erro ao inserir dados no `user_data`:', err);
     res.status(500).json({ message: 'Erro no servidor ao registrar os dados do comprador' });
-  }
-});
-
-// Rota de buscar clientes
-app.get('/clientes', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT id, name, telefone1, num_lote FROM user_data');
-    res.status(200).json(result.rows);
-  } catch (err) {
-    console.error('Erro ao buscar clientes:', err);
-    res.status(500).json({ message: 'Erro no servidor ao buscar clientes' });
   }
 });
 

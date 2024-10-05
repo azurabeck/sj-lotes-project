@@ -6,6 +6,12 @@ npm run dev | yarn dev | pnpm dev | bun dev
 ```
 * Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Deploy backend
+```bash
+git subtree split --prefix=backend -b backend-deploy
+git push heroku backend-deploy:master --force
+```
+
 
 ## Files Structure
 
