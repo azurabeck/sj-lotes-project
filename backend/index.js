@@ -15,15 +15,18 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
 const secretKey = process.env.JWT_SECRET || 'supersecretkey';
 
 // Configurar CORS para permitir todas as origens (temporariamente)
 app.use(cors({
-  origin: '*', // Permite todas as origens (não recomendado em produção)
+  origin: ['http://localhost:3000', NEXT_PUBLIC_BACKEND_URL], 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
+
+app.options('/register-user-data', cors()); // Permite a requisição OPTIONS na rota
 
 // Habilitar o uso de cookies
 app.use(cookieParser());
