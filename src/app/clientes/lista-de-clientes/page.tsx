@@ -29,7 +29,6 @@ export default function ClientList() {
   }, []);
 
   const handleViewDetails = (id: number) => {
-    // Navegar para a página de detalhes do cliente, passando o ID na URL
     router.push(`/clientes/${id}`);
   };
 
@@ -50,8 +49,8 @@ export default function ClientList() {
             </tr>
           </thead>
           <tbody>
-            {clientes.map((cliente) => (
-              <tr key={cliente.id}>
+            {clientes.map((cliente , index) => (
+              <tr key={index}>
                 <td className="w-[50%] py-2 px-4 border-b">{cliente.name}</td>
                 <td className="w-[15%] py-2 px-4 border-b">{cliente.telefone1}</td>
                 <td className="w-[15%] py-2 px-4 border-b">{cliente.numlote}</td>

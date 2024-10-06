@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Cliente {
+    [x: string]: any;
     id: ReactNode;
     name: string;
     email: string;
@@ -55,6 +56,29 @@ export interface Cliente {
       throw error;
     }
   }
+
+  export async function registerClienteAcess(clienteData: any): Promise<void> {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/client-access`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(clienteData),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Erro ao registrar cliente');
+      }
+  
+      const responseData = await response.json();
+      console.log('Cliente registrado com sucesso:', responseData);
+    } catch (error) {
+      console.error('Erro ao registrar cliente:', error);
+      throw error;
+    }
+  }
+  
 
   export async function fetchClienteById(id: number): Promise<Cliente> {
     try {
